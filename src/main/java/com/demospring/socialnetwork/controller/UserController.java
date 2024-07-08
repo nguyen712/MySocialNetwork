@@ -1,12 +1,15 @@
 package com.demospring.socialnetwork.controller;
 
+import com.demospring.socialnetwork.dto.request.GeoRequestData;
 import com.demospring.socialnetwork.dto.request.UserRequest;
 import com.demospring.socialnetwork.dto.response.ApiResponse;
 import com.demospring.socialnetwork.dto.response.UserResponse;
+import com.demospring.socialnetwork.entity.User;
 import com.demospring.socialnetwork.service.iservice.IUserService;
 import com.demospring.socialnetwork.util.mapper.UserMapper;
 import com.demospring.socialnetwork.util.message.Message;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,8 +28,14 @@ public class UserController {
     UserMapper userMapper;
 
     @PostMapping("/register")
-    public ApiResponse<UserResponse> registerUser(@RequestBody UserRequest userRequest) throws Exception {
+    public ApiResponse<UserResponse> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception {
+        var clientIp = request.getRemoteAddr();
         var user = userService.createUser(userRequest);
+        var setUserLocation = userService.setLocationOfUser(clientIp, user.getId());
+        if(setUserLocation == null || user == null) return ApiResponse.<UserResponse>builder()
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(Message.ErrorMessage.ADD_UNSUCCESSFULLY)
+                .build();
         return ApiResponse.<UserResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .message(Message.SuccessMessage.ADD_SUCCESSFULLY)
@@ -42,4 +51,10 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/update-user-ip")
+    public ApiResponse<User> updateUserLocation(@RequestBody GeoRequestData geoRequestData){
+        return ApiResponse.<User>builder()
+                .data(userService.setLocationOfUser(geoRequestData.getClientIp(), geoRequestData.getUserId()))
+                .build();
+    }
 }

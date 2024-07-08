@@ -10,5 +10,6 @@ import java.util.List;
 @Service
 public interface IUserService {
     User createUser(UserRequest userRequest) throws Exception;
+    User setLocationOfUser(String clientIp, String userId);
     List<UserResponse> getAllUserIsAvailable();
 }

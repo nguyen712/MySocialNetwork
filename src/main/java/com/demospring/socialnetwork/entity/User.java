@@ -23,6 +23,8 @@ public class User {
     String firstName;
     String lastName;
     String email;
+    double latitude;
+    double longitude;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<Post> posts;
 

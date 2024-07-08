@@ -18,8 +18,6 @@ import java.util.ArrayList;
 @Configuration
 @OpenAPIDefinition
 public class SwaggerConfig {
-
-
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI().addSecurityItem(new SecurityRequirement().

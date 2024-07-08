@@ -62,7 +62,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .build();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public AuthenticationResponse signInGoogle(OAuth2AuthenticationToken authentication) {
         var username = authentication.getPrincipal().getAttributes().get("email");

@@ -16,7 +16,8 @@ public enum ErrorCode {
     PASSWORD_IS_BLANK(HttpStatus.BAD_REQUEST.value(), "Username can not be blank."),
     FIRSTNAME_IS_BLANK(HttpStatus.BAD_REQUEST.value(), "Username can not be blank."),
     LASTNAME_IS_BLANK(HttpStatus.BAD_REQUEST.value(), "Username can not be blank."),
-
+    USERNAME_IS_EXISTED(HttpStatus.BAD_REQUEST.value(), "Username is existed."),
+    CAN_NOT_GET_LOCATION(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Can not get location in Geo Max Mind")
     ;
     private int errorCode;
     private String message;
