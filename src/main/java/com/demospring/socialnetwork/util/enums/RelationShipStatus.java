@@ -1,4 +1,4 @@
-package com.demospring.socialnetwork.enums;
+package com.demospring.socialnetwork.util.enums;
 
 public enum RelationShipStatus {
     PENDING,

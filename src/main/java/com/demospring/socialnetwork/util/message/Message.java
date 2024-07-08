@@ -11,5 +11,7 @@ public class Message {
         public static String ADD_SUCCESSFULLY = "ADD SUCCESSFULLY";
 
     }
-
+    public static class ErrorMessage{
+        public static String ADD_UNSUCCESSFULLY = "ADD UNSUCCESSFULLY";
+    }
 }

@@ -21,13 +21,15 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     @Value("${JWT.PRIVATE_KEY}")
     private String signerKey;
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/*"};
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/*", "/user/*"};
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui").permitAll()
+                        .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                         .oauth2Login(Customizer.withDefaults());
 

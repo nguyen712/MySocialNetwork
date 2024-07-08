@@ -8,6 +8,7 @@ import com.demospring.socialnetwork.dto.response.IntrospectResponse;
 import com.demospring.socialnetwork.service.iservice.IAuthenticationService;
 import com.demospring.socialnetwork.util.message.Message;
 import com.nimbusds.jose.JOSEException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Auth")
 public class AuthenticationController {
 
     IAuthenticationService authenticationService;

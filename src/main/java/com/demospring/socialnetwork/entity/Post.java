@@ -24,6 +24,8 @@ public class Post {
     Date ModifiedDate;
     String title;
     String content;
+    long quantityOfLike = 0;
+    long quantityOfDislike = 0;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     User user;

@@ -1,6 +1,7 @@
 package com.demospring.socialnetwork.service.implservice;
 
 import com.demospring.socialnetwork.dto.request.UserRequest;
+import com.demospring.socialnetwork.dto.response.UserResponse;
 import com.demospring.socialnetwork.entity.User;
 import com.demospring.socialnetwork.repository.UserRepository;
 import com.demospring.socialnetwork.service.iservice.IUserService;
@@ -11,10 +12,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -37,5 +41,14 @@ public class UserService implements IUserService {
             log.error(e.getMessage());
             throw new Exception(e.getMessage());
         }
+    }
+
+    @Override
+    public List<UserResponse> getAllUserIsAvailable() {
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        List<User> userList = userRepository.findAllUsersAvailableForAddFriend(user.getId());
+        return userMapper.toUserResponseList(userList);
     }
 }

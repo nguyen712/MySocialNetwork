@@ -1,6 +1,6 @@
 package com.demospring.socialnetwork.entity;
 
-import com.demospring.socialnetwork.enums.RelationShipStatus;
+import com.demospring.socialnetwork.util.enums.RelationShipStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -19,7 +19,6 @@ public class Action {
     @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "post_id")
     Post post;
     String action;
-    String quantity;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     User user;
