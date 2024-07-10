@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,5 +21,9 @@ public class Friend {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     User user;
-    String name;
+    @ManyToOne
+    @JoinColumn(name = "friend_id", nullable = false)
+    private User friend;
+    Date CreatedDate;
+    Date ModifiedDate;
 }

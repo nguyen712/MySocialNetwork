@@ -31,11 +31,6 @@ public class UserController {
     public ApiResponse<UserResponse> registerUser(@RequestBody UserRequest userRequest, HttpServletRequest request) throws Exception {
         var clientIp = request.getRemoteAddr();
         var user = userService.createUser(userRequest);
-        var setUserLocation = userService.setLocationOfUser(clientIp, user.getId());
-        if(setUserLocation == null || user == null) return ApiResponse.<UserResponse>builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(Message.ErrorMessage.ADD_UNSUCCESSFULLY)
-                .build();
         return ApiResponse.<UserResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .message(Message.SuccessMessage.ADD_SUCCESSFULLY)
@@ -55,6 +50,22 @@ public class UserController {
     public ApiResponse<User> updateUserLocation(@RequestBody GeoRequestData geoRequestData){
         return ApiResponse.<User>builder()
                 .data(userService.setLocationOfUser(geoRequestData.getClientIp(), geoRequestData.getUserId()))
+                .build();
+    }
+
+    @GetMapping("/user-nearly/{requiredDistance}")
+    public ApiResponse<List<UserResponse>> getUserForAddFriend(@PathVariable double requiredDistance){
+        List<UserResponse> userResponseList = userService.getAllUserNearly(requiredDistance);
+        return ApiResponse.<List<UserResponse>>builder()
+                .data(userResponseList)
+                .build();
+    }
+
+    @GetMapping("/user-friends/{userId}")
+    public ApiResponse<List<UserResponse>> getUserForAddFriend(@PathVariable String userId){
+        List<UserResponse> userResponseList = userService.getAllFriends(userId);
+        return ApiResponse.<List<UserResponse>>builder()
+                .data(userResponseList)
                 .build();
     }
 }

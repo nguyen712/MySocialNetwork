@@ -12,4 +12,6 @@ public interface IUserService {
     User createUser(UserRequest userRequest) throws Exception;
     User setLocationOfUser(String clientIp, String userId);
     List<UserResponse> getAllUserIsAvailable();
+    List<UserResponse> getAllUserNearly(double requiredDistance);
+    List<UserResponse> getAllFriends(String userId);
 }

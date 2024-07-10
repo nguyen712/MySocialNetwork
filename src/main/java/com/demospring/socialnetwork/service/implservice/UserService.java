@@ -3,11 +3,14 @@ package com.demospring.socialnetwork.service.implservice;
 import com.demospring.socialnetwork.dto.request.UserRequest;
 import com.demospring.socialnetwork.dto.response.UserResponse;
 import com.demospring.socialnetwork.entity.User;
+import com.demospring.socialnetwork.repository.FriendRepository;
 import com.demospring.socialnetwork.repository.UserRepository;
 import com.demospring.socialnetwork.service.iservice.IGeoLocationService;
 import com.demospring.socialnetwork.service.iservice.IUserService;
+import com.demospring.socialnetwork.util.enums.RelationShipStatus;
 import com.demospring.socialnetwork.util.exception.AppException;
 import com.demospring.socialnetwork.util.exception.ErrorCode;
+import com.demospring.socialnetwork.util.helper.MathHelper;
 import com.demospring.socialnetwork.util.mapper.UserMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +35,7 @@ public class UserService implements IUserService {
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
     IGeoLocationService geoLocationService;
+    FriendRepository friendRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -73,4 +79,43 @@ public class UserService implements IUserService {
         }
         return userMapper.toUserResponseList(allUser);
     }
+
+    @Override
+    public List<UserResponse> getAllUserNearly(double requiredDistance) {
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        var allUser = userRepository.findUserHasLatitudeAndLongitude(user.getId());
+        if(allUser.isEmpty()) return new ArrayList<UserResponse>();
+        List<User> nearbyUsers = allUser.stream()
+                .filter(x -> {
+                    double distanceOfUser = MathHelper.calculateDistance(user.getLatitude(), user.getLongitude(),
+                            x.getLatitude(), x.getLongitude());
+                    System.out.println("Distance between user and x: " + distanceOfUser);
+                    return distanceOfUser <= requiredDistance;
+                })
+                .collect(Collectors.toList());
+        return userMapper.toUserResponseList(nearbyUsers);
+    }
+
+    @Override
+    public List<UserResponse> getAllFriends(String userId) {
+        var user = friendRepository.getAllFriendsByUserId(userId);
+        if(user.isEmpty()){
+            log.info("User doesnt have any friends.");
+            return new ArrayList<>();
+        }
+        List<User> friends = user.stream()
+                .map(friendship -> {
+                    if (friendship.getUser().getId().equals(userId)) {
+                        return friendship.getUser();
+                    } else {
+                        return friendship.getFriend();
+                    }
+                })
+                .collect(Collectors.toList());
+        return userMapper.toUserResponseList(friends);
+    }
+
 }

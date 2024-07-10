@@ -12,8 +12,11 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUsername(String username);
-
+    @Query(value = "select u from User u where u.latitude is not null and u.longitude is not null and u.id != :userId")
+    List<User> findUserHasLatitudeAndLongitude(@Param("userId") String userId);
     @Query(value = "select u from User u join Friend f on u.id = f.user.id " +
             "where f.user.id != :userId")
     List<User> findAllUsersAvailableForAddFriend(@Param("userId") String userId);
+    @Query(value = "select u from User u where u.id in :ids")
+    List<User> findAllByIds(List<String> ids);
 }

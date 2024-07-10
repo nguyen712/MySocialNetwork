@@ -19,6 +19,5 @@ public class UserRequest {
     String firstName;
     @NotBlank(message = "LASTNAME_IS_BLANK")
     String lastName;
-    String clientIp;
     String email;
 }

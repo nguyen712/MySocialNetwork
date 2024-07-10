@@ -2,6 +2,7 @@ package com.demospring.socialnetwork.controller;
 
 import com.demospring.socialnetwork.dto.request.PostActionRequest;
 import com.demospring.socialnetwork.dto.request.PostRequest;
+import com.demospring.socialnetwork.dto.request.UpdatePostRequest;
 import com.demospring.socialnetwork.dto.response.ApiResponse;
 import com.demospring.socialnetwork.dto.response.PostResponse;
 import com.demospring.socialnetwork.service.implservice.PostService;
@@ -13,10 +14,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/post")
@@ -39,6 +39,19 @@ public class PostController {
         }
     }
 
+    @PutMapping
+    public ApiResponse<PostResponse> updatePost(@RequestBody UpdatePostRequest postRequest) {
+        try{
+            var post = postService.updatePost(postRequest);
+            return ApiResponse.<PostResponse>builder()
+                    .data(post)
+                    .message(Message.SuccessMessage.ADD_SUCCESSFULLY)
+                    .build();
+        }catch (Exception ex){
+            throw new AppException(ErrorCode.ADD_UNSUCCESSFULLY);
+        }
+    }
+
     @PostMapping("/action-with-post")
     public ApiResponse<String> actionWithPost(@RequestBody PostActionRequest request){
         try{
@@ -49,5 +62,12 @@ public class PostController {
         }catch (Exception ex){
             throw new AppException(ErrorCode.ADD_UNSUCCESSFULLY);
         }
+    }
+    @GetMapping("/post-available")
+    public ApiResponse<List<PostResponse>> getAllPosts() {
+        var post = postService.getAllAvailablePosts();
+        return ApiResponse.<List<PostResponse>>builder()
+                .data(post)
+                .build();
     }
 }

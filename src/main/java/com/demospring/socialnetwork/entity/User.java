@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Cascade;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -32,5 +33,8 @@ public class User {
     List<Action> actions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Friend> friends;
+    Set<Friend> friendShip;
+
+    @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL)
+    Set<Friend> friends;
 }

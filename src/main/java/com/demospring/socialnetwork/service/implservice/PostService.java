@@ -2,13 +2,17 @@ package com.demospring.socialnetwork.service.implservice;
 
 import com.demospring.socialnetwork.dto.request.PostActionRequest;
 import com.demospring.socialnetwork.dto.request.PostRequest;
+import com.demospring.socialnetwork.dto.request.UpdatePostRequest;
 import com.demospring.socialnetwork.dto.response.PostResponse;
 import com.demospring.socialnetwork.entity.Action;
+import com.demospring.socialnetwork.entity.User;
 import com.demospring.socialnetwork.repository.ActionRepository;
+import com.demospring.socialnetwork.repository.FriendRepository;
 import com.demospring.socialnetwork.repository.PostRepository;
 import com.demospring.socialnetwork.repository.UserRepository;
 import com.demospring.socialnetwork.service.iservice.IPostService;
 import com.demospring.socialnetwork.util.enums.EnumAction;
+import com.demospring.socialnetwork.util.enums.RelationShipStatus;
 import com.demospring.socialnetwork.util.exception.AppException;
 import com.demospring.socialnetwork.util.exception.ErrorCode;
 import com.demospring.socialnetwork.util.mapper.PostMapper;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +39,7 @@ public class PostService implements IPostService {
     UserRepository userRepository;
     PostRepository postRepository;
     ActionRepository actionRepository;
+    FriendRepository friendRepository;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -53,6 +59,19 @@ public class PostService implements IPostService {
             throw new Exception(e.getMessage());
         }
     }
+
+    @Override
+    public PostResponse updatePost(UpdatePostRequest postRequest) throws Exception {
+        var context = SecurityContextHolder.getContext();
+        var name = context.getAuthentication().getName();
+        var user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        var post = postRepository.findById(postRequest.getPostId()).orElseThrow(() -> new AppException(ErrorCode.POST_IS_NOT_EXISTED));
+        if(!user.getId().equals(post.getUser().getId())) throw new AppException(ErrorCode.USER_IS_NOT_A_AUTHOR_OF_POST);
+        postMapper.UpdatePost(post, postRequest.getPostRequest());
+        postRepository.save(post);
+        return postMapper.toPostResponse(post);
+    }
+
     /**
      * This is an implementation of "Like or Dislike" action for the post.
      * @param actionRequest contains which button is pressed by user, postId
@@ -129,5 +148,23 @@ public class PostService implements IPostService {
         }
     }
 
+    @Override
+    public List<PostResponse> getAllAvailablePosts() {
+        var context = SecurityContextHolder.getContext();
+        var name = context.getAuthentication().getName();
+        var user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        var friend = friendRepository.getAllFriendsByUserId(user.getId());
+        var listUserId = new ArrayList<String>();
+        friend.forEach(friendship -> {
+                    if (friendship.getUser().getId().equals(user.getId())) {
+                        listUserId.add(friendship.getUser().getId());
+                    } else {
+                        listUserId.add(friendship.getFriend().getId());
+                    }
+                });
+        var posts = postRepository.findAllByUserId(listUserId);
+        if(posts.isEmpty()) return new ArrayList<>();
+        return postMapper.toPostResponses(posts);
+    }
 
 }
