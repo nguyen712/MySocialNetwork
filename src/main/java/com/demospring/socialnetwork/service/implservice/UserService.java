@@ -109,9 +109,9 @@ public class UserService implements IUserService {
         List<User> friends = user.stream()
                 .map(friendship -> {
                     if (friendship.getUser().getId().equals(userId)) {
-                        return friendship.getUser();
-                    } else {
                         return friendship.getFriend();
+                    } else {
+                        return friendship.getUser();
                     }
                 })
                 .collect(Collectors.toList());
