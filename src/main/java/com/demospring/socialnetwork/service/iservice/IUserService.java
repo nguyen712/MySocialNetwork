@@ -13,5 +13,5 @@ public interface IUserService {
     User setLocationOfUser(String clientIp, String userId);
     List<UserResponse> getAllUserIsAvailable();
     List<UserResponse> getAllUserNearly(double requiredDistance);
-    List<UserResponse> getAllFriends(String userId);
+    List<UserResponse> getAllFriends();
 }

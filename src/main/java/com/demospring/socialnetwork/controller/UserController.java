@@ -61,9 +61,9 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/user-friends/{userId}")
-    public ApiResponse<List<UserResponse>> getUserForAddFriend(@PathVariable String userId){
-        List<UserResponse> userResponseList = userService.getAllFriends(userId);
+    @GetMapping("/user-friends")
+    public ApiResponse<List<UserResponse>> getUserForAddFriend(){
+        List<UserResponse> userResponseList = userService.getAllFriends();
         return ApiResponse.<List<UserResponse>>builder()
                 .data(userResponseList)
                 .build();

@@ -100,15 +100,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> getAllFriends(String userId) {
-        var user = friendRepository.getAllFriendsByUserId(userId);
+    public List<UserResponse> getAllFriends() {
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+        var userIsExistedOrNot = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        var user = friendRepository.getAllFriendsByUserId(userIsExistedOrNot.getId());
         if(user.isEmpty()){
             log.info("User doesnt have any friends.");
             return new ArrayList<>();
         }
         List<User> friends = user.stream()
                 .map(friendship -> {
-                    if (friendship.getUser().getId().equals(userId)) {
+                    if (friendship.getUser().getId().equals(userIsExistedOrNot.getId())) {
                         return friendship.getFriend();
                     } else {
                         return friendship.getUser();
