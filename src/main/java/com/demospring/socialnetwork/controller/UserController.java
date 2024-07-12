@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/user-friends")
-    public ApiResponse<List<UserResponse>> getUserForAddFriend(){
+    public ApiResponse<List<UserResponse>> getAllFriendOfUser(){
         List<UserResponse> userResponseList = userService.getAllFriends();
         return ApiResponse.<List<UserResponse>>builder()
                 .data(userResponseList)
