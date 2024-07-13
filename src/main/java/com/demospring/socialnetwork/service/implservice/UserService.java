@@ -1,6 +1,7 @@
 package com.demospring.socialnetwork.service.implservice;
 
 import com.demospring.socialnetwork.dto.request.UserRequest;
+import com.demospring.socialnetwork.dto.response.UserAfterUpdateLocationResponse;
 import com.demospring.socialnetwork.dto.response.UserResponse;
 import com.demospring.socialnetwork.entity.User;
 import com.demospring.socialnetwork.repository.FriendRepository;
@@ -16,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +39,7 @@ public class UserService implements IUserService {
     IGeoLocationService geoLocationService;
     FriendRepository friendRepository;
 
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public User createUser(UserRequest userRequest) throws Exception{
@@ -54,14 +57,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User setLocationOfUser(String clientIp, String userId) {
-        var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+    public UserAfterUpdateLocationResponse setLocationOfUser(String clientIp) {
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
         try{
            var location = geoLocationService.getLocationById(clientIp);
             user.setLatitude(location.getLatitude());
             user.setLongitude(location.getLongitude());
             userRepository.save(user);
-            return user;
+            return userMapper.toUserMapperUpdateLocationResponse(user);
         }catch (Exception ex){
             throw new AppException(ErrorCode.CAN_NOT_GET_LOCATION);
         }
@@ -100,15 +105,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserResponse> getAllFriends(String userId) {
-        var user = friendRepository.getAllFriendsByUserId(userId);
+    public List<UserResponse> getAllFriends() {
+        var context = SecurityContextHolder.getContext();
+        var username = context.getAuthentication().getName();
+        var userIsExistedOrNot = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_IS_NOT_EXISTED));
+        var user = friendRepository.getAllFriendsByUserId(userIsExistedOrNot.getId());
         if(user.isEmpty()){
             log.info("User doesnt have any friends.");
             return new ArrayList<>();
         }
         List<User> friends = user.stream()
                 .map(friendship -> {
-                    if (friendship.getUser().getId().equals(userId)) {
+                    if (friendship.getUser().getId().equals(userIsExistedOrNot.getId())) {
                         return friendship.getFriend();
                     } else {
                         return friendship.getUser();

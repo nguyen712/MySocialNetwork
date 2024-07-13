@@ -26,6 +26,7 @@ public class Post {
     String content;
     long quantityOfLike = 0;
     long quantityOfDislike = 0;
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
     User user;

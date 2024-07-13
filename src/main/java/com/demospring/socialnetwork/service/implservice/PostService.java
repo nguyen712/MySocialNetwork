@@ -53,7 +53,8 @@ public class PostService implements IPostService {
             post.setUser(user);
             post.setCreatedDate(new Date());
             postRepository.save(post);
-            return postMapper.toPostResponse(post);
+            var response = postMapper.toPostResponse(post);
+            return response;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new Exception(e.getMessage());

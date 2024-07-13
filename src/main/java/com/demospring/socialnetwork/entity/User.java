@@ -26,6 +26,7 @@ public class User {
     String email;
     double latitude;
     double longitude;
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<Post> posts;
 

@@ -3,6 +3,7 @@ package com.demospring.socialnetwork.controller;
 import com.demospring.socialnetwork.dto.request.GeoRequestData;
 import com.demospring.socialnetwork.dto.request.UserRequest;
 import com.demospring.socialnetwork.dto.response.ApiResponse;
+import com.demospring.socialnetwork.dto.response.UserAfterUpdateLocationResponse;
 import com.demospring.socialnetwork.dto.response.UserResponse;
 import com.demospring.socialnetwork.entity.User;
 import com.demospring.socialnetwork.service.iservice.IUserService;
@@ -47,9 +48,9 @@ public class UserController {
     }
 
     @PostMapping("/update-user-ip")
-    public ApiResponse<User> updateUserLocation(@RequestBody GeoRequestData geoRequestData){
-        return ApiResponse.<User>builder()
-                .data(userService.setLocationOfUser(geoRequestData.getClientIp(), geoRequestData.getUserId()))
+    public ApiResponse<UserAfterUpdateLocationResponse> updateUserLocation(@RequestBody GeoRequestData geoRequestData){
+        return ApiResponse.<UserAfterUpdateLocationResponse>builder()
+                .data(userService.setLocationOfUser(geoRequestData.getClientIp()))
                 .build();
     }
 
@@ -61,9 +62,9 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/user-friends/{userId}")
-    public ApiResponse<List<UserResponse>> getUserForAddFriend(@PathVariable String userId){
-        List<UserResponse> userResponseList = userService.getAllFriends(userId);
+    @GetMapping("/user-friends")
+    public ApiResponse<List<UserResponse>> getAllFriendOfUser(){
+        List<UserResponse> userResponseList = userService.getAllFriends();
         return ApiResponse.<List<UserResponse>>builder()
                 .data(userResponseList)
                 .build();
