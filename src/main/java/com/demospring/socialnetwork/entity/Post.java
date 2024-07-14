@@ -17,11 +17,11 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "post_id")
-    String Id;
-    String CreatedBy;
-    String ModifiedBy;
-    Date CreatedDate;
-    Date ModifiedDate;
+    String id;
+    String createdBy;
+    String modifiedBy;
+    Date createdDate;
+    Date modifiedDate;
     String title;
     String content;
     long quantityOfLike = 0;

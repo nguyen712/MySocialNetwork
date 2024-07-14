@@ -43,6 +43,7 @@ public class UserController {
     public ApiResponse<List<UserResponse>> getUserForAddFriend(){
         List<UserResponse> userResponseList = userService.getAllUserIsAvailable();
         return ApiResponse.<List<UserResponse>>builder()
+                .code(HttpStatus.OK.value())
                 .data(userResponseList)
                 .build();
     }
@@ -50,6 +51,7 @@ public class UserController {
     @PostMapping("/update-user-ip")
     public ApiResponse<UserAfterUpdateLocationResponse> updateUserLocation(@RequestBody GeoRequestData geoRequestData){
         return ApiResponse.<UserAfterUpdateLocationResponse>builder()
+                .code(HttpStatus.OK.value())
                 .data(userService.setLocationOfUser(geoRequestData.getClientIp()))
                 .build();
     }
@@ -58,6 +60,7 @@ public class UserController {
     public ApiResponse<List<UserResponse>> getUserForAddFriend(@PathVariable double requiredDistance){
         List<UserResponse> userResponseList = userService.getAllUserNearly(requiredDistance);
         return ApiResponse.<List<UserResponse>>builder()
+                .code(HttpStatus.OK.value())
                 .data(userResponseList)
                 .build();
     }
@@ -66,6 +69,7 @@ public class UserController {
     public ApiResponse<List<UserResponse>> getAllFriendOfUser(){
         List<UserResponse> userResponseList = userService.getAllFriends();
         return ApiResponse.<List<UserResponse>>builder()
+                .code(HttpStatus.OK.value())
                 .data(userResponseList)
                 .build();
     }

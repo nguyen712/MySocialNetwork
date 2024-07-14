@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class PostController {
         try{
             var post = postService.createPost(postRequest);
             return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.CREATED.value())
                     .data(post)
                     .message(Message.SuccessMessage.ADD_SUCCESSFULLY)
                     .build();
@@ -44,6 +46,7 @@ public class PostController {
         try{
             var post = postService.updatePost(postRequest);
             return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.OK.value())
                     .data(post)
                     .message(Message.SuccessMessage.ADD_SUCCESSFULLY)
                     .build();
@@ -57,6 +60,7 @@ public class PostController {
         try{
             var post = postService.actionWithPost(request);
             return ApiResponse.<String>builder()
+                    .code(HttpStatus.OK.value())
                     .message(post)
                     .build();
         }catch (Exception ex){
@@ -67,6 +71,7 @@ public class PostController {
     public ApiResponse<List<PostResponse>> getAllPosts() {
         var post = postService.getAllAvailablePosts();
         return ApiResponse.<List<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
                 .data(post)
                 .build();
     }

@@ -157,11 +157,9 @@ public class PostService implements IPostService {
         var friend = friendRepository.getAllFriendsByUserId(user.getId());
         var listUserId = new ArrayList<String>();
         friend.forEach(friendship -> {
-                    if (friendship.getUser().getId().equals(user.getId())) {
+
                         listUserId.add(friendship.getFriend().getId());
-                    } else {
                         listUserId.add(friendship.getUser().getId());
-                    }
                 });
         var posts = postRepository.findAllByUserId(listUserId);
         if(posts.isEmpty()) return new ArrayList<>();
