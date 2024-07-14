@@ -11,11 +11,11 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
-    String Id;
-    String CreatedBy;
-    String ModifiedBy;
-    Date CreatedDate;
-    Date ModifiedDate;
+    String id;
+    String createdBy;
+    String modifiedBy;
+    Date createdDate;
+    Date modifiedDate;
     String title;
     String content;
 }
