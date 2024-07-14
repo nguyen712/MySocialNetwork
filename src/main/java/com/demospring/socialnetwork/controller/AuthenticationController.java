@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> signInGoogle(OAuth2AuthenticationToken authentication) {
         var authenticationRes = authenticationService.signInGoogle(authentication);
         return ApiResponse.<AuthenticationResponse>builder()
+                .code(HttpStatus.OK.value())
                 .data(AuthenticationResponse.builder()
                         .authenticated(authenticationRes.isAuthenticated())
                         .token(authenticationRes.getToken())
@@ -44,10 +46,12 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest){
         var authenticationRes = authenticationService.authenticate(loginRequest);
         return ApiResponse.<AuthenticationResponse>builder()
+                .code(HttpStatus.OK.value())
                 .data(AuthenticationResponse.builder()
                         .authenticated(authenticationRes.isAuthenticated())
                         .token(authenticationRes.getToken())
                         .build())
+                .message(Message.SuccessMessage.AUTHENTICATE_SUCCESS)
                 .build();
     }
 
@@ -56,6 +60,7 @@ public class AuthenticationController {
             throws ParseException, JOSEException {
         var result = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
+                .code(HttpStatus.OK.value())
                 .data(result)
                 .message(Message.SuccessMessage.INTROSPECT_SUCCESS)
                 .build();
